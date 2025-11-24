@@ -1,4 +1,4 @@
-import { DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "../common/Printable";
+import { DEFAULT_DELIMITER } from "../common/Printable";
 import { Name } from "./Name";
 import { AbstractName } from "./AbstractName";
 
@@ -6,64 +6,94 @@ export class StringArrayName extends AbstractName {
 
     protected components: string[] = [];
 
+    /**
+     * Constructs a Name from an array of already masked components.
+     * The array is defensively copied.
+     */
     constructor(source: string[], delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+        super(delimiter ?? DEFAULT_DELIMITER);
+
+        if (source) {
+            this.components = source.slice();
+        } else {
+            this.components = [];
+        }
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        // Deep copy of the component array; delimiter stays the same.
+        return new StringArrayName(this.components.slice(), this.delimiter);
     }
 
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        return super.asString(delimiter);
     }
 
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        return super.asDataString();
     }
 
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
+    public isEqual(other: Object): boolean {
+        return super.isEqual(other);
     }
 
     public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
+        return super.getHashCode();
     }
 
     public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
+        return super.isEmpty();
     }
 
     public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return super.getDelimiterCharacter();
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        this.assertIndexInRange(i, 0, this.components.length - 1);
+        return this.components[i];
     }
 
-    public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    public setComponent(i: number, c: string): void {
+        this.assertIndexInRange(i, 0, this.components.length - 1);
+        this.components[i] = c;
     }
 
-    public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    public insert(i: number, c: string): void {
+        this.assertIndexInRange(i, 0, this.components.length, true);
+        this.components.splice(i, 0, c);
     }
 
-    public append(c: string) {
-        throw new Error("needs implementation or deletion");
+    public append(c: string): void {
+        this.components.push(c);
     }
 
-    public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+    public remove(i: number): void {
+        this.assertIndexInRange(i, 0, this.components.length - 1);
+        this.components.splice(i, 1);
     }
 
     public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+        super.concat(other);
+    }
+
+    // ---------------------------------------------------------------------
+    // Helper
+    // ---------------------------------------------------------------------
+
+    private assertIndexInRange(
+        index: number,
+        minInclusive: number,
+        maxInclusive: number,
+        allowEqualMaxPlusOne: boolean = false
+    ): void {
+        const upper = allowEqualMaxPlusOne ? maxInclusive + 1 : maxInclusive;
+        if (index < minInclusive || index > upper) {
+            throw new RangeError(`Index ${index} out of range [${minInclusive}, ${upper}]`);
+        }
     }
 }
