@@ -1,6 +1,7 @@
 import { Name } from "../names/Name";
 import { StringName } from "../names/StringName";
 import { Directory } from "./Directory";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 
 export class RootNode extends Directory {
 
@@ -15,6 +16,7 @@ export class RootNode extends Directory {
     }
 
     protected initialize(pn: Directory): void {
+        // Root is its own parent
         this.parentNode = this;
     }
 
@@ -23,11 +25,13 @@ export class RootNode extends Directory {
     }
 
     public move(to: Directory): void {
-        // null operation
+        // Precondition: Root cannot be moved
+        IllegalArgumentException.assert(false, "Root node cannot be moved");
     }
 
     protected doSetBaseName(bn: string): void {
-        // null operation
+        // Precondition: Root cannot be renamed 
+        IllegalArgumentException.assert(bn === "", "Root node cannot be renamed");
     }
 
 }

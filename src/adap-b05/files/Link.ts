@@ -1,5 +1,7 @@
 import { Node } from "./Node";
 import { Directory } from "./Directory";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+import { InvalidStateException } from "../common/InvalidStateException";
 
 export class Link extends Node {
 
@@ -11,6 +13,7 @@ export class Link extends Node {
         if (tn != undefined) {
             this.targetNode = tn;
         }
+        this.assertClassInvariant();
     }
 
     public getTargetNode(): Node | null {
@@ -18,7 +21,11 @@ export class Link extends Node {
     }
 
     public setTargetNode(target: Node): void {
+        // Precondition: Target must not be null
+        IllegalArgumentException.assert(target != null, "Target node cannot be null");
         this.targetNode = target;
+        
+        this.assertClassInvariant();
     }
 
     public getBaseName(): string {
@@ -31,8 +38,25 @@ export class Link extends Node {
         target.rename(bn);
     }
 
+    /**
+     * Helper to ensure target is valid before delegating operations
+     */
     protected ensureTargetNode(target: Node | null): Node {
-        const result: Node = this.targetNode as Node;
-        return result;
+        // Contract: Operations requiring a target must fail if the link is broken
+        InvalidStateException.assert(target != null, "Invalid State: Link target is not set (broken link)");
+        
+        return target as Node;
+    }
+
+    /**
+     * Returns all nodes in the tree that match bn.
+     * Based on standard file system behavior `find` usually matches the link name.
+     */
+    public findNodes(bn: string): Set<Node> {
+        return super.findNodes(bn);
+    }
+
+    protected assertClassInvariant(): void {
+        super.assertClassInvariant();
     }
 }
